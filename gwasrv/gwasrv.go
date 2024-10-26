@@ -31,7 +31,7 @@ type TxMessage struct {
 	Textarea        string
 	BackgroundColor string
 	Color           string
-	CanvasData      []uint8
+	ImageName       string
 }
 
 func WsElemNew(id string) WsElem {
@@ -105,9 +105,9 @@ func (wse *WsElem) writeMessage(txMsg TxMessage) error {
 	return nil
 }
 
-func (wse *WsElem) DrawCanvas(buffer []byte) error {
+func (wse *WsElem) ShowImage(pngFile string) error {
 	txMsg := TxMessage{}
-	txMsg.CanvasData = buffer
+	txMsg.ImageName = pngFile
 	err := wse.writeMessage(txMsg)
 	return err
 }

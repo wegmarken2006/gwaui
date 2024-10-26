@@ -65,12 +65,11 @@
         - gridrow:
           - p:
               id: id_43
-          - canvas:
-                id: id_44
-                width: 400
-                height: 400
+          - image:
+                id: id_46
           - p:
               id: id_45
+
 
 - tab:
     id: id201

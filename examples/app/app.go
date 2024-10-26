@@ -4,6 +4,9 @@ package main
 
 import (
 	. "fmt"
+	"image"
+	"image/color"
+	"image/png"
 	"os"
 
 	gw "github.com/xxx/gwasrv"
@@ -11,6 +14,35 @@ import (
 
 func show(message string) {
 	Printf("show: %s\n", message)
+}
+
+func testImage(filePath string, width int, height int) {
+
+	upLeft := image.Point{0, 0}
+	lowRight := image.Point{width, height}
+
+	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
+
+	// Colors are defined by Red, Green, Blue, Alpha uint8 values.
+	cyan := color.RGBA{100, 200, 200, 0xff}
+
+	// Set color for each pixel.
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
+			switch {
+			case x < width/2 && y < height/2: // upper left quadrant
+				img.Set(x, y, cyan)
+			case x >= width/2 && y >= height/2: // lower right quadrant
+				img.Set(x, y, color.Black)
+			default:
+				// Use zero value.
+			}
+		}
+	}
+
+	// Encode as PNG.
+	f, _ := os.Create(filePath)
+	png.Encode(f, img)
 }
 
 func main() {
@@ -56,13 +88,13 @@ func main() {
 	cv1 := gw.WsElemNew("id_44")
 	cv1.AttachWebSocket(func(message string) {})
 
-	buffer := make([]byte, 400*400)
-	for i := 0; i < 400*400; i++ {
-		buffer[i] = byte(i % 255)
-	}
+	img1 := gw.WsElemNew("id_46")
+	img1.AttachWebSocket(func(message string) {})
+
 	bt2 := gw.WsElemNew("id_41")
 	bt2.AttachWebSocket(func(message string) {
-		cv1.DrawCanvas(buffer)
+		testImage("static/image.png", 400, 400)
+		img1.ShowImage("image.png")
 	})
 
 	gw.StartServer()

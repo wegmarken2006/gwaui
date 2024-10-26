@@ -237,6 +237,15 @@ func (dom *Dom) Tab() Elem {
 	return div1
 }
 
+func (dom *Dom) Image(id string, fileName string) Elem {
+	div1 := dom.newElem(id, "img")
+	if len(fileName) > 0 {
+		div1.jsValue.Call("setAttribute", "src", fileName)
+	}
+
+	return div1
+}
+
 func (dom *Dom) Tabcontent(tab Elem, id string, title string) Elem {
 	bt := dom.newElem("", "button")
 	bt.jsValue.Call("setAttribute", "class", "tablinks secondary")
@@ -428,28 +437,32 @@ func (elem *Elem) Tooltip(text string) {
 	elem.jsValue.Call("setAttribute", "data-placement", "right")
 }
 
-func (elem *Elem) PutImage(inData []uint8) {
-	/*
-		elem.canvas.ctx.Call("clearRect", 0, 0, elem.canvas.width, elem.canvas.height)
-		imageData := elem.canvas.ctx.Call("getImageData", 0, 0, elem.canvas.width, elem.canvas.height)
-		data := imageData.Get("data")
-		len := data.Get("length").Int()
-		//goDataSafe := goData[:min(data.Get("length").Int(), len(goData))]
-
-		goData := make([]uint8, len)
-
-		for i := 0; i < len; i++ {
-			goData[i] = 255 - goData[i]     // red
-			goData[i+1] = 255 - goData[i+1] // green
-			goData[i+2] = 255 - goData[i+2] // blue
-
-		}
-		js.CopyBytesToJS(data, goData)
-		elem.canvas.ctx.Call("putImageData", imageData, 0, 0)
-
-		//js.CopyBytesToJS(data, goDataSafe)
-	*/
+func (elem *Elem) ShowImage(imageName string) {
+	elem.jsValue.Call("setAttribute", "src", imageName)
 }
+
+/*
+func (elem *Elem) PutImage(pngName string) {
+
+	elem.canvas.ctx.Call("clearRect", 0, 0, elem.canvas.width, elem.canvas.height)
+	//imageData := elem.canvas.ctx.Call("getImageData", 0, 0, elem.canvas.width, elem.canvas.height)
+	imageData := elem.canvas.ctx.Call("createImageData", elem.canvas.width, elem.canvas.height)
+	data := imageData.Get("data")
+	len := data.Get("length").Int()
+
+	goData := make([]uint8, len)
+
+	for i := 0; i < len; i++ {
+		goData[i] = 255 - goData[i]     // red
+		goData[i+1] = 255 - goData[i+1] // green
+		goData[i+2] = 255 - goData[i+2] // blue
+
+	}
+	js.CopyBytesToJS(data, goData)
+
+	elem.canvas.ctx.Call("putImageData", imageData, 0, 0)
+}
+*/
 
 func (elem *Elem) AddWebSocket() {
 	id := elem.id
@@ -465,7 +478,7 @@ type RxMessage struct {
 	Textarea        string
 	BackgroundColor string
 	Color           string
-	CanvasData      []uint8
+	ImageName       string
 }
 
 func (elem *Elem) WsRead() {
@@ -500,8 +513,8 @@ func (elem *Elem) WsRead() {
 			}
 			elem.SetInnerText(textValue)
 		}
-		if len(rxMsg.CanvasData) > 0 {
-			elem.PutImage(rxMsg.CanvasData)
+		if len(rxMsg.ImageName) > 0 {
+			elem.ShowImage(rxMsg.ImageName)
 		}
 
 		return nil
@@ -559,6 +572,7 @@ type GridRowElement struct {
 	H2        H2        `yaml:"h2,omitempty"`
 	Paragraph Paragraph `yaml:"p,omitempty"`
 	Canvas    Canvas    `yaml:"canvas,omitempty"`
+	Image     Image     `yaml:"image,omitempty"`
 }
 
 type Paragraph struct {
@@ -609,6 +623,10 @@ type Canvas struct {
 	Id     string `yaml:"id"`
 	Width  int    `yaml:"width"`
 	Height int    `yaml:"height"`
+}
+
+type Image struct {
+	Id string `yaml:"id"`
 }
 
 // Define the structure for each grid row
@@ -727,6 +745,12 @@ func (elem *Elem) WsReadConfiguration() {
 						cv.AddWebSocket()
 						cv.WsRead()
 						elems = append(elems, cv)
+					}
+					if len(grid.Image.Id) > 0 {
+						img := elem.dom.Image(grid.Image.Id, "")
+						img.AddWebSocket()
+						img.WsRead()
+						elems = append(elems, img)
 					}
 
 				}
