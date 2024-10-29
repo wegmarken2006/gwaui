@@ -1,4 +1,4 @@
-module gwasrv
+module github.com/wegmarken2006/gwaui/gwasrv
 
 go 1.23.1
 
