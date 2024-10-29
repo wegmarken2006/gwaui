@@ -1,4 +1,4 @@
-module gwacln
+module github.com/wegmarken2006/gwaui/gwacln
 
 go 1.23.1
 
