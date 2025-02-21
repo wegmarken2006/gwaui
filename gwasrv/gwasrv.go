@@ -1,11 +1,14 @@
 package gwasrv
 
 import (
+	"bufio"
 	"fmt"
 	. "fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"gopkg.in/yaml.v3"
@@ -18,8 +21,6 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  WEBSOCKET_BUFFER_SIZE,
 	WriteBufferSize: WEBSOCKET_BUFFER_SIZE,
 }
-
-const STARTING_PORT = 9001
 
 type WsElem struct {
 	gs   *websocket.Conn
@@ -40,7 +41,6 @@ func WsElemNew(id string) WsElem {
 
 	return wsElem
 }
-
 
 func (wse *WsElem) AttachWebSocket(fn func(message string)) error {
 	var conn *websocket.Conn
@@ -168,20 +168,30 @@ func StartServer() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
-	port := STARTING_PORT
 	go func() {
-		for {
-			portStr := Sprintf(":%d", port)
-			Println(portStr)
-			text := Sprintf("Serving on http://localhost%s", portStr)
-			Println(text)
-			err := http.ListenAndServe(portStr, nil)
-			if err != nil {
-				Println(err)
-				port += 1
-			} else {
-				break
-			}
+		listener, err := net.Listen("tcp", ":0")
+		if err != nil {
+			panic(err)
 		}
+
+		text := Sprintf("Serving on http://127.0.0.1:%d", listener.Addr().(*net.TCPAddr).Port)
+		Println(text)
+
+		panic(http.Serve(listener, nil))
 	}()
+}
+
+func WaitKeyFromCOnsole() {
+	//Wait for a key press
+	reader := bufio.NewReader(os.Stdin)
+	Println("Press:\n q<Enter> to exit")
+	for {
+		text, err := reader.ReadString('\n')
+		if err != nil {
+			os.Exit(0)
+		}
+		if strings.HasPrefix(text, "q") || strings.HasPrefix(text, "Q") {
+			os.Exit(0)
+		}
+	}
 }

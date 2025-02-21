@@ -9,7 +9,7 @@ import (
 	"image/png"
 	"os"
 
-	gw "github.com/xxx/gwasrv"
+	gw "github.com/wegmarken2006/gwaui/gwasrv"
 )
 
 func show(message string) {
@@ -99,7 +99,6 @@ func main() {
 
 	gw.StartServer()
 
-	for {
-	}
+	gw.WaitKeyFromCOnsole()
 
 }

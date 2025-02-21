@@ -1,5 +1,5 @@
-// GOOS=js GOARCH=wasm go build -o main.wasm gwagui.go
-// tinygo build -o main.wasm gwagui.go
+// GOOS=js GOARCH=wasm go build -o main.wasm gwacln.go
+// tinygo build -o main.wasm gwacln.go
 package gwacln
 
 import (
