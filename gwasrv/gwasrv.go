@@ -41,6 +41,7 @@ func WsElemNew(id string) WsElem {
 	return wsElem
 }
 
+
 func (wse *WsElem) AttachWebSocket(fn func(message string)) error {
 	var conn *websocket.Conn
 	var err error
