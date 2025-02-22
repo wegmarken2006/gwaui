@@ -1,6 +1,6 @@
 // GOOS=js GOARCH=wasm go build -o main.wasm gwacln.go
 // tinygo build -o main.wasm gwacln.go
-package gwacln
+package main
 
 import (
 	"fmt"
@@ -35,6 +35,14 @@ type CanvasElem struct {
 	ctx    js.Value
 	width  int
 	height int
+}
+
+func main() {
+	c := make(chan struct{}, 0)
+
+	GwauiInit("title", true, true)
+
+	<-c
 }
 
 func GwauiInit(titleText string, debug bool, waitForWebSocket bool) Dom {
