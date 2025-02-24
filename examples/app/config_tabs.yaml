@@ -4,17 +4,17 @@
     rows:
       - gridrow:
           - p:
-              id: id_20
+              id:
           - p:
-              id: id_21
+              id:
           - h2:
               id: id_7
               text: header2
               mutable: true
           - p:
-              id: id_22
+              id:
           - p:
-              id: id_23
+              id:
       - gridrow:
           - dropdown:
               id: id_1
@@ -56,7 +56,7 @@
     rows:
         - gridrow:
           - p:
-              id: id_40
+              id:
           - button:
               id: id_41
               text: draw
@@ -64,11 +64,11 @@
               id: id_42
         - gridrow:
           - p:
-              id: id_43
+              id:
           - image:
                 id: id_46
           - p:
-              id: id_45
+              id:
 
 
 - tab:

@@ -2,17 +2,17 @@
     rows:
       - gridrow:
           - p:
-              id: id_20
+              id:
           - p:
-              id: id_21
+              id:
           - h2:
               id: id_7
               text: header2
               mutable: true
           - p:
-              id: id_22
+              id:
           - p:
-              id: id_23
+              id:
       - gridrow:
           - dropdown:
               id: id_1

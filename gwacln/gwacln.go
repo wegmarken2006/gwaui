@@ -1,5 +1,5 @@
-// GOOS=js GOARCH=wasm go build -o main.wasm gwacln.go
-// tinygo build -o main.wasm gwacln.go
+// GOOS=js GOARCH=wasm go build -o main.wasm .
+// tinygo build -o main.wasm .
 package main
 
 import (
@@ -51,7 +51,7 @@ func GwauiInit(titleText string, debug bool, waitForWebSocket bool) Dom {
 		wind:    js.Global().Get("window"),
 		console: js.Global().Get("window").Get("console"),
 		body:    js.Global().Get("document").Get("body"),
-		idCount: 100,
+		idCount: 300,
 		Debug:   debug,
 	}
 
@@ -478,6 +478,7 @@ func (elem *Elem) AddWebSocket() {
 	addr := fmt.Sprintf("ws://%s/%s", host, id)
 	ws := js.Global().Get("WebSocket").New(addr)
 
+	elem.dom.ConsoleLog(addr) //TODO
 	elem.ws = ws
 }
 
@@ -534,129 +535,39 @@ func (elem *Elem) WsRead() {
 /*
 func (elem *Elem) WsReadForTextArea() {
 
-	jsFun := func(this js.Value, inputs []js.Value) interface{} {
-		event := inputs[0]
-		edata := event.Get("data").String()
+		jsFun := func(this js.Value, inputs []js.Value) interface{} {
+			event := inputs[0]
+			edata := event.Get("data").String()
 
-		textValue := elem.Value() //current content
-		str := fmt.Sprintf("%s%s", textValue, edata)
+			textValue := elem.Value() //current content
+			str := fmt.Sprintf("%s%s", textValue, edata)
 
-		diff := len(str) - 4096
-		if diff > 0 {
-			textValue = str[:diff] //str.slice(diff);
-		} else {
-			textValue = str
+			diff := len(str) - 4096
+			if diff > 0 {
+				textValue = str[:diff] //str.slice(diff);
+			} else {
+				textValue = str
+			}
+
+			elem.SetInnerText(textValue)
+			return nil
 		}
 
-		elem.SetInnerText(textValue)
-		return nil
+		elem.ws.Call("addEventListener", "message", js.FuncOf(jsFun))
 	}
-
-	elem.ws.Call("addEventListener", "message", js.FuncOf(jsFun))
-}
 
 func (elem *Elem) WsReadForGenericText() {
 
-	jsFun := func(this js.Value, inputs []js.Value) interface{} {
-		event := inputs[0]
-		edata := event.Get("data").String()
+		jsFun := func(this js.Value, inputs []js.Value) interface{} {
+			event := inputs[0]
+			edata := event.Get("data").String()
 
-		elem.SetInnerText(edata)
-		return nil
+			elem.SetInnerText(edata)
+			return nil
+		}
+
+		elem.ws.Call("addEventListener", "message", js.FuncOf(jsFun))
 	}
-
-	elem.ws.Call("addEventListener", "message", js.FuncOf(jsFun))
-}
-*/
-
-// Define the structure for yaml configuration file
-type GridRowElement struct {
-	Dropdown  Dropdown  `yaml:"dropdown,omitempty"`
-	Button    Button    `yaml:"button,omitempty"`
-	Form      Form      `yaml:"form,omitempty"`
-	Slider    Slider    `yaml:"slider,omitempty"`
-	Textarea  Textarea  `yaml:"textarea,omitempty"`
-	Label     Label     `yaml:"label,omitempty"`
-	H2        H2        `yaml:"h2,omitempty"`
-	Paragraph Paragraph `yaml:"p,omitempty"`
-	Canvas    Canvas    `yaml:"canvas,omitempty"`
-	Image     Image     `yaml:"image,omitempty"`
-}
-
-type Paragraph struct {
-	Id   string `yaml:"id"`
-	Text string `yaml:"text"`
-}
-
-type Dropdown struct {
-	Id         string   `yaml:"id"`
-	DefaultInd int      `yaml:"defaultind"`
-	Items      []string `yaml:"items"`
-}
-
-type Button struct {
-	Id   string `yaml:"id"`
-	Text string `yaml:"text"`
-}
-
-type Form struct {
-	Id   string `yaml:"id"`
-	Text string `yaml:"text"`
-}
-
-type Slider struct {
-	Id        string `yaml:"id"`
-	MinMaxIni []int  `yaml:"minmaxini"`
-}
-
-type Textarea struct {
-	Id    string `yaml:"id"`
-	Text  string `yaml:"text"`
-	Lines int    `yaml:"lines"`
-}
-
-type Label struct {
-	Id      string `yaml:"id"`
-	Text    string `yaml:"text"`
-	Mutable bool   `yaml:"mutable"`
-}
-
-type H2 struct {
-	Id      string `yaml:"id"`
-	Text    string `yaml:"text"`
-	Mutable bool   `yaml:"mutable"`
-}
-
-type Canvas struct {
-	Id     string `yaml:"id"`
-	Width  int    `yaml:"width"`
-	Height int    `yaml:"height"`
-}
-
-type Image struct {
-	Id string `yaml:"id"`
-}
-
-// Define the structure for each grid row
-
-type GuiDescr struct {
-	Tab Tab `yaml:"tab"`
-}
-
-type Tab struct {
-	Id   string `yaml:"id"`
-	Text string `yaml:"text"`
-	Row  []Row  `yaml:"rows"`
-}
-
-type Row struct {
-	GridRow []GridRowElement `yaml:"gridrow"`
-}
-
-/*
-type GuiDescr struct {
-	GridRow []GridRowElement `yaml:"gridrow"`
-}
 */
 
 func (elem *Elem) WsReadConfiguration() {
@@ -743,9 +654,12 @@ func (elem *Elem) WsReadConfiguration() {
 						}
 						elems = append(elems, h2)
 					}
-					emptyP := Paragraph{}
-					if grid.Paragraph != emptyP {
-						par := elem.dom.Paragraph(grid.Paragraph.Id, grid.Paragraph.Text)
+					if grid.Paragraph != nil {
+						id := ""
+						if len(grid.Paragraph.Id) > 0 {
+							id = grid.Paragraph.Id
+						}
+						par := elem.dom.Paragraph(id, grid.Paragraph.Text)
 						elems = append(elems, par)
 					}
 					if len(grid.Canvas.Id) > 0 {

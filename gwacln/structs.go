@@ -1,4 +1,4 @@
-package gwasrv
+package main
 
 // Define the structure for yaml configuration file
 type GridRowElement struct {

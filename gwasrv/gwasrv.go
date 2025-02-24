@@ -36,6 +36,7 @@ type TxMessage struct {
 }
 
 func WsElemNew(id string) WsElem {
+
 	addr := Sprintf("/%s", id)
 	wsElem := WsElem{addr: addr}
 
@@ -43,6 +44,7 @@ func WsElemNew(id string) WsElem {
 }
 
 func (wse *WsElem) AttachWebSocket(fn func(message string)) error {
+
 	var conn *websocket.Conn
 	var err error
 	http.HandleFunc(wse.addr, func(w http.ResponseWriter, r *http.Request) {
@@ -141,13 +143,13 @@ func (wse *WsElem) WriteTextArea(text string) error {
 	return err
 }
 
-func Init(yamlName string) error {
+func Init(yamlName string) (func(string) *WsElem, error) {
 	// Read and send Yaml configuration to the client
 
 	yamlFile, err := os.Open(yamlName)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer yamlFile.Close()
@@ -155,13 +157,79 @@ func Init(yamlName string) error {
 	byteValue, _ := io.ReadAll(yamlFile)
 
 	//client reading configuration attached to the "title" element defined in static/index.html
-	title := WsElem{addr: "/id_0"}
+	//title := WsElem{addr: "/id_0"}
+	title := WsElemNew("id_0")
 	title.AttachWebSocket(func(message string) {
 		//Println(message)
 		title.wsWrite(byteValue)
 	})
 
-	return nil
+	var guiDescr []GuiDescr
+	yaml.Unmarshal([]byte(byteValue), &guiDescr)
+
+	helems := make(map[string]*WsElem)
+
+	for _, tabs := range guiDescr {
+		//for _, grid := range row.GridRow {
+		rows := tabs.Tab.Row
+		for _, row := range rows {
+			for _, grid := range row.GridRow {
+				if len(grid.Button.Id) > 0 {
+					bt := WsElemNew(grid.Button.Id)
+					helems[grid.Button.Id] = &bt
+				}
+				if len(grid.Dropdown.Id) > 0 {
+					dd := WsElemNew(grid.Dropdown.Id)
+					helems[grid.Dropdown.Id] = &dd
+				}
+				if len(grid.Form.Id) > 0 {
+					fm := WsElemNew(grid.Form.Id)
+					helems[grid.Form.Id] = &fm
+				}
+				if len(grid.Slider.Id) > 0 {
+					sl := WsElemNew(grid.Slider.Id)
+					helems[grid.Slider.Id] = &sl
+				}
+				if len(grid.Textarea.Id) > 0 {
+					ta := WsElemNew(grid.Textarea.Id)
+					ta.AttachWebSocket(func(message string) {})
+					helems[grid.Textarea.Id] = &ta
+				}
+				if len(grid.Label.Id) > 0 {
+					lb := WsElemNew(grid.Label.Id)
+					if grid.Label.Mutable {
+						lb.AttachWebSocket(func(message string) {})
+					}
+					helems[grid.Label.Id] = &lb
+				}
+				if len(grid.H2.Id) > 0 {
+					h2 := WsElemNew(grid.H2.Id)
+					if grid.H2.Mutable {
+						h2.AttachWebSocket(func(message string) {})
+					}
+					helems[grid.H2.Id] = &h2
+				}
+				if len(grid.Canvas.Id) > 0 {
+					cv := WsElemNew(grid.Canvas.Id)
+					cv.AttachWebSocket(func(message string) {})
+					helems[grid.Canvas.Id] = &cv
+
+				}
+				if len(grid.Image.Id) > 0 {
+					im := WsElemNew(grid.Image.Id)
+					im.AttachWebSocket(func(message string) {})
+					helems[grid.Image.Id] = &im
+				}
+			}
+		}
+	}
+
+	StartServer()
+
+	retFun := func(id string) *WsElem {
+		return helems[id]
+	}
+	return retFun, nil
 }
 
 func StartServer() {

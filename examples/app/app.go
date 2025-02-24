@@ -47,34 +47,32 @@ func testImage(filePath string, width int, height int) {
 
 func main() {
 
-	err := gw.Init("config_tabs.yaml")
+	getElem, err := gw.Init("config_tabs.yaml")
 	if err != nil {
 		Println(err)
 		os.Exit(0)
 	}
 
-	form1 := gw.WsElemNew("id_3")
+	form1 := getElem("id_3")
+	dd1 := getElem("id_1")
+	lb1 := getElem("id_6")
+	h21 := getElem("id_7")
+	sl2 := getElem("id_4")
+	ta1 := getElem("id_5")
+	bt1 := getElem("id_2")
+	//cv1 := getElem("id_44")
+	img1 := getElem("id_46")
+	bt2 := getElem("id_41")
+
 	form1.AttachWebSocket(show)
 
-	dd1 := gw.WsElemNew("id_1")
 	dd1.AttachWebSocket(show)
 
-	lb1 := gw.WsElemNew("id_6")
-	lb1.AttachWebSocket(show)
-
-	h21 := gw.WsElemNew("id_7")
-	h21.AttachWebSocket(show)
-
-	sl2 := gw.WsElemNew("id_4")
 	sl2.AttachWebSocket(func(message string) {
 		Printf("recv: %s\n", message)
 		lb1.SetInnerText(message)
 	})
 
-	ta1 := gw.WsElemNew("id_5")
-	ta1.AttachWebSocket(func(message string) {})
-
-	bt1 := gw.WsElemNew("id_2")
 	bt1.AttachWebSocket(func(message string) {
 		Printf("recv: %s\n", message)
 		err := ta1.WriteTextArea("fgfgfgfgfg")
@@ -85,19 +83,10 @@ func main() {
 		h21.SetBackgroundColor("red")
 	})
 
-	cv1 := gw.WsElemNew("id_44")
-	cv1.AttachWebSocket(func(message string) {})
-
-	img1 := gw.WsElemNew("id_46")
-	img1.AttachWebSocket(func(message string) {})
-
-	bt2 := gw.WsElemNew("id_41")
 	bt2.AttachWebSocket(func(message string) {
 		testImage("static/image.png", 400, 400)
 		img1.ShowImage("image.png")
 	})
-
-	gw.StartServer()
 
 	gw.WaitKeyFromCOnsole()
 
