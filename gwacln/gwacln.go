@@ -151,9 +151,12 @@ func (dom *Dom) Label(id string, text string) Elem {
 	return elem
 }
 
-func (dom *Dom) Input(id string) Elem {
+func (dom *Dom) Input(id string, text string) Elem {
 	elem := dom.newElem(id, "input")
 	elem.jsValue.Call("setAttribute", "type", "text")
+	if len(text) > 0 {
+		elem.jsValue.Call("setAttribute", "placeholder", text)
+	}
 	return elem
 }
 
@@ -235,6 +238,7 @@ func (dom *Dom) Header1(id string, text string) Elem {
 func (dom *Dom) Header2(id string, text string) Elem {
 	elem := dom.newElem(id, "h2")
 	elem.SetInnerText(text)
+	elem.jsValue.Get("style").Call("setProperty", "text-align", "center")
 	return elem
 }
 
@@ -621,6 +625,15 @@ func (elem *Elem) WsReadConfiguration() {
 							fm.WsWrite(value)
 						})
 						elems = append(elems, fm)
+					}
+					if len(grid.Input.Id) > 0 {
+						ip := elem.dom.Input(grid.Input.Id, grid.Input.Text)
+						ip.AddWebSocket()
+						ip.OnChange(func() {
+							value := ip.Value()
+							ip.WsWrite(value)
+						})
+						elems = append(elems, ip)
 					}
 					if len(grid.Slider.Id) > 0 {
 						sl := elem.dom.Slider(grid.Slider.Id, grid.Slider.MinMaxIni[0], grid.Slider.MinMaxIni[1], grid.Slider.MinMaxIni[2])

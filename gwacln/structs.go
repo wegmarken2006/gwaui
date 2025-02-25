@@ -5,6 +5,7 @@ type GridRowElement struct {
 	Dropdown  Dropdown   `yaml:"dropdown,omitempty"`
 	Button    Button     `yaml:"button,omitempty"`
 	Form      Form       `yaml:"form,omitempty"`
+	Input	  Input		 `yaml:"input,omitempty"`
 	Slider    Slider     `yaml:"slider,omitempty"`
 	Textarea  Textarea   `yaml:"textarea,omitempty"`
 	Label     Label      `yaml:"label,omitempty"`
@@ -31,6 +32,11 @@ type Button struct {
 }
 
 type Form struct {
+	Id   string `yaml:"id"`
+	Text string `yaml:"text"`
+}
+
+type Input struct {
 	Id   string `yaml:"id"`
 	Text string `yaml:"text"`
 }

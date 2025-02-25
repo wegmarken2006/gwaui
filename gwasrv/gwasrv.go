@@ -186,6 +186,10 @@ func Init(yamlName string) (func(string) *WsElem, error) {
 					fm := WsElemNew(grid.Form.Id)
 					helems[grid.Form.Id] = &fm
 				}
+				if len(grid.Input.Id) > 0 {
+					ip := WsElemNew(grid.Input.Id)
+					helems[grid.Input.Id] = &ip
+				}
 				if len(grid.Slider.Id) > 0 {
 					sl := WsElemNew(grid.Slider.Id)
 					helems[grid.Slider.Id] = &sl

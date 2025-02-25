@@ -81,6 +81,7 @@ func main() {
 		}
 
 		h21.SetBackgroundColor("red")
+		h21.SetColor("white")
 	})
 
 	bt2.AttachWebSocket(func(message string) {
