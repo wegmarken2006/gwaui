@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"os"
 
+	webview "github.com/webview/webview_go"
 	gw "github.com/wegmarken2006/gwaui/gwasrv"
 )
 
@@ -46,8 +47,16 @@ func testImage(filePath string, width int, height int) {
 }
 
 func main() {
+	args := os.Args
 
-	getElem, err := gw.Init("config_tabs.yaml")
+	wv := false
+	if len(args) > 1 {
+		if args[1] == "wv" {
+			wv = true
+		}
+	}
+
+	getElem, addr, err := gw.Init("config_tabs.yaml")
 	if err != nil {
 		Println(err)
 		os.Exit(0)
@@ -89,6 +98,19 @@ func main() {
 		img1.ShowImage("image.png")
 	})
 
-	gw.WaitKeyFromCOnsole()
+	if wv {
+		w := webview.New(false)
+		defer w.Destroy()
+		w.SetTitle("Bind Example")
+		w.SetSize(1200, 1000, 0)
+		w.Navigate(addr)
 
+		w.Run()
+
+	} else {
+		text := Sprintf("Serving on %s", addr)
+		Println(text)
+
+		gw.WaitKeyFromCOnsole()
+	}
 }

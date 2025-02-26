@@ -54,16 +54,15 @@ func (wse *WsElem) AttachWebSocket(fn func(message string)) error {
 			return
 		}
 		wse.gs = conn
-		//defer c.Close() where to
+
 		go func() {
 			for {
 				_, message, err := conn.ReadMessage()
 				if err != nil {
-					Println("read:", err)
+					//Println("read:", err)
 					break
 				}
 				fn(string(message))
-				//log.Printf("recv: %s", message)
 			}
 		}()
 	})
@@ -143,13 +142,13 @@ func (wse *WsElem) WriteTextArea(text string) error {
 	return err
 }
 
-func Init(yamlName string) (func(string) *WsElem, error) {
+func Init(yamlName string) (func(string) *WsElem, string, error) {
 	// Read and send Yaml configuration to the client
 
 	yamlFile, err := os.Open(yamlName)
 
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	defer yamlFile.Close()
@@ -228,17 +227,19 @@ func Init(yamlName string) (func(string) *WsElem, error) {
 		}
 	}
 
-	StartServer()
+	addr := StartServer()
 
 	retFun := func(id string) *WsElem {
 		return helems[id]
 	}
-	return retFun, nil
+	return retFun, addr, nil
 }
 
-func StartServer() {
+func StartServer() string {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/", http.FileServer(http.Dir("./static")))
+
+	ch := make(chan string)
 
 	go func() {
 		listener, err := net.Listen("tcp", ":0")
@@ -246,11 +247,17 @@ func StartServer() {
 			panic(err)
 		}
 
-		text := Sprintf("Serving on http://127.0.0.1:%d", listener.Addr().(*net.TCPAddr).Port)
-		Println(text)
+		addrStr := Sprintf("http://127.0.0.1:%d", listener.Addr().(*net.TCPAddr).Port)
+		ch <- addrStr
+		//text := Sprintf("Serving on %s", addrStr)
+		//Println(text)
 
 		panic(http.Serve(listener, nil))
 	}()
+
+	addrStr := <-ch
+
+	return addrStr
 }
 
 func WaitKeyFromCOnsole() {

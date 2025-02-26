@@ -1,5 +1,6 @@
 // GOOS=js GOARCH=wasm go build -o main.wasm .
 // tinygo build -o main.wasm .
+// tinygo build --no-debug -o main.wasm .
 package main
 
 import (
