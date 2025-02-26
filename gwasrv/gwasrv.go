@@ -189,6 +189,10 @@ func Init(yamlName string) (func(string) *WsElem, string, error) {
 					ip := WsElemNew(grid.Input.Id)
 					helems[grid.Input.Id] = &ip
 				}
+				if len(grid.Date.Id) > 0 {
+					dt := WsElemNew(grid.Date.Id)
+					helems[grid.Date.Id] = &dt
+				}
 				if len(grid.Slider.Id) > 0 {
 					sl := WsElemNew(grid.Slider.Id)
 					helems[grid.Slider.Id] = &sl

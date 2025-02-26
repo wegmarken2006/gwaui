@@ -69,9 +69,12 @@ func main() {
 	sl2 := getElem("id_4")
 	ta1 := getElem("id_5")
 	bt1 := getElem("id_2")
+	dt1 := getElem("id_30")
 	//cv1 := getElem("id_44")
 	img1 := getElem("id_46")
 	bt2 := getElem("id_41")
+
+	dt1.AttachWebSocket(show)
 
 	form1.AttachWebSocket(show)
 

@@ -13,6 +13,11 @@ type GridRowElement struct {
 	Paragraph *Paragraph `yaml:"p,omitempty"`
 	Canvas    Canvas     `yaml:"canvas,omitempty"`
 	Image     Image      `yaml:"image,omitempty"`
+	Date      Date       `yaml:"date,omitempty"`
+}
+
+type Date struct {
+	Id string `yaml:"id"`
 }
 
 type Paragraph struct {

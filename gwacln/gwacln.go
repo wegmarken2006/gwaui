@@ -161,6 +161,12 @@ func (dom *Dom) Input(id string, text string) Elem {
 	return elem
 }
 
+func (dom *Dom) Date(id string) Elem {
+	elem := dom.newElem(id, "input")
+	elem.jsValue.Call("setAttribute", "type", "date")
+	return elem
+}
+
 func (dom *Dom) Slider(id string, min int, max int, value int) Elem {
 	elem := dom.newElem(id, "input")
 	elem.jsValue.Call("setAttribute", "type", "range")
@@ -635,6 +641,15 @@ func (elem *Elem) WsReadConfiguration() {
 							ip.WsWrite(value)
 						})
 						elems = append(elems, ip)
+					}
+					if len(grid.Date.Id) > 0 {
+						dt := elem.dom.Date(grid.Date.Id)
+						dt.AddWebSocket()
+						dt.OnChange(func() {
+							value := dt.Value()
+							dt.WsWrite(value)
+						})
+						elems = append(elems, dt)
 					}
 					if len(grid.Slider.Id) > 0 {
 						sl := elem.dom.Slider(grid.Slider.Id, grid.Slider.MinMaxIni[0], grid.Slider.MinMaxIni[1], grid.Slider.MinMaxIni[2])
