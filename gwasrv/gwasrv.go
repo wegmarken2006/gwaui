@@ -2,13 +2,13 @@ package gwasrv
 
 import (
 	"bufio"
-	"fmt"
 	. "fmt"
 	"io"
 	"net"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"gopkg.in/yaml.v3"
@@ -33,6 +33,7 @@ type TxMessage struct {
 	BackgroundColor string
 	Color           string
 	ImageName       string
+	ItemList        []string
 }
 
 func WsElemNew(id string) WsElem {
@@ -84,14 +85,35 @@ func (wse *WsElem) InitWriteWs() {
 */
 
 func (wse *WsElem) wsWrite(message []byte) error {
-	if wse.gs == nil {
-		return fmt.Errorf("no websocket")
-	}
-	err := wse.gs.WriteMessage(websocket.TextMessage, message)
-	if err != nil {
-		return err
-	}
-	return nil
+	var err error = nil
+	go func() {
+		//wait for available websocket
+		for ind := 0; ind < 100; ind++ {
+			if wse.gs != nil {
+				break
+			}
+			time.Sleep(50 * time.Millisecond)
+		}
+		if wse.gs == nil {
+			Println("no websocket")
+			//err = fmt.Errorf("no websocket")
+		} else {
+			err = wse.gs.WriteMessage(websocket.TextMessage, message)
+			if err != nil {
+				Println(err)
+			}
+		}
+	}()
+	/*
+		if wse.gs == nil {
+			return fmt.Errorf("no websocket")
+		}
+		err := wse.gs.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+			return err
+		}
+	*/
+	return err
 }
 
 func (wse *WsElem) writeMessage(txMsg TxMessage) error {
@@ -131,6 +153,13 @@ func (wse *WsElem) SetColor(color string) error {
 func (wse *WsElem) SetInnerText(text string) error {
 	txMsg := TxMessage{}
 	txMsg.Text = text
+	err := wse.writeMessage(txMsg)
+	return err
+}
+
+func (wse *WsElem) SetItemsList(lst []string) error {
+	txMsg := TxMessage{}
+	txMsg.ItemList = lst
 	err := wse.writeMessage(txMsg)
 	return err
 }

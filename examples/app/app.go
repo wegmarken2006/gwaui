@@ -78,6 +78,7 @@ func main() {
 
 	form1.AttachWebSocket(show)
 
+	dd1.SetItemsList([]string{"one", "two", "three"})
 	dd1.AttachWebSocket(show)
 
 	sl2.AttachWebSocket(func(message string) {

@@ -380,6 +380,34 @@ func (elem *Elem) SetColor(color string) {
 	elem.jsValue.Get("style").Call("setProperty", "color", color)
 }
 
+func (elem *Elem) SetItemsList(lst []string) {
+	//sel := dom.newElem(id, "select")
+
+	dom := elem.dom
+	defaultInd := 0
+
+	op1 := dom.newElem("", "option")
+	op1.jsValue.Call("setAttribute", "value", "")
+
+	if len(lst) > 0 {
+		elem.jsValue.Call("setAttribute", "aria-label", lst[defaultInd])
+		op1.SetInnerText(lst[defaultInd])
+	}
+
+	elem.Append(op1)
+
+	for ind, item := range lst {
+		if ind == defaultInd {
+			continue
+		} else {
+			op := dom.newElem("", "option")
+			op.SetInnerText(item)
+			elem.Append(op)
+		}
+	}
+
+}
+
 func (elem *Elem) setMultipleCols(colsNr int) {
 	elem.jsValue.Get("style").Call("setProperty", "float", "left")
 	perc := fmt.Sprintf("%d%c", int(100/colsNr), '%')
@@ -499,6 +527,7 @@ type RxMessage struct {
 	BackgroundColor string
 	Color           string
 	ImageName       string
+	ItemList        []string
 }
 
 func (elem *Elem) WsRead() {
@@ -532,6 +561,9 @@ func (elem *Elem) WsRead() {
 				textValue = str
 			}
 			elem.SetInnerText(textValue)
+		}
+		if len(rxMsg.ItemList) > 0 {
+			elem.SetItemsList(rxMsg.ItemList)
 		}
 		if len(rxMsg.ImageName) > 0 {
 			elem.ShowImage(rxMsg.ImageName)
@@ -618,6 +650,7 @@ func (elem *Elem) WsReadConfiguration() {
 					if len(grid.Dropdown.Id) > 0 {
 						dd := elem.dom.Dropdown(grid.Dropdown.Id, grid.Dropdown.Items, grid.Dropdown.DefaultInd)
 						dd.AddWebSocket()
+						dd.WsRead()
 						dd.OnChange(func() {
 							value := dd.Value()
 							dd.WsWrite(value)
