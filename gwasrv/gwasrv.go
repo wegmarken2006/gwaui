@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -86,22 +87,26 @@ func (wse *WsElem) InitWriteWs() {
 
 func (wse *WsElem) wsWrite(message []byte) error {
 	var err error = nil
+	var m sync.Mutex
 	go func() {
 		//wait for available websocket
-		for ind := 0; ind < 100; ind++ {
+		for ind := 0; ind < 200; ind++ {
 			if wse.gs != nil {
 				break
 			}
 			time.Sleep(50 * time.Millisecond)
 		}
 		if wse.gs == nil {
-			Println("no websocket")
+			Println(wse.addr, "no websocket")
 			//err = fmt.Errorf("no websocket")
 		} else {
+			m.Lock()
 			err = wse.gs.WriteMessage(websocket.TextMessage, message)
+			m.Unlock()
 			if err != nil {
 				Println(err)
 			}
+			//Println(wse.addr, "ok websocket")
 		}
 	}()
 	/*
