@@ -284,6 +284,34 @@ func (dom *Dom) Tabcontent(tab Elem, id string, title string) Elem {
 	return div2
 }
 
+func (dom *Dom) Plot(id string, pConf PlotConf) Elem {
+	elem := dom.newElem(id, "div")
+	//plotly := js.Global().Get("Plotly")
+
+	// Create the traces
+	data1 := js.ValueOf(map[string]interface{}{
+		//"x":    []interface{}{pConf.x},
+		//"y":    []interface{}{pConf.y},
+		"x":    []interface{}{1, 2, 3, 4},
+		"y":    []interface{}{12, 9, 15, 12},
+		"mode": "markers",
+		"type": "scatter",
+	})
+	/*
+		layout1 := js.ValueOf(map[string]interface{}{
+			"title":  "title",
+			"width":  100,
+			"height": 100,
+		})
+	*/
+	data := js.ValueOf([]interface{}{data1})
+	//layout := js.ValueOf([]interface{}{layout1})
+
+	// Call the Plotly.newPlot function
+	dom.wind.Get("Plotly").Call("newPlot", dom.doc.Call("getElementById", id), data)
+	return elem
+}
+
 func (elem *Elem) enableThisTab() {
 	for _, tab := range elem.dom.tabs {
 		if tab.id == elem.id {
@@ -732,6 +760,8 @@ func (elem *Elem) WsReadConfiguration() {
 					}
 					if len(grid.Image.Id) > 0 {
 						img := elem.dom.Image(grid.Image.Id, "")
+						//pConf := PlotConf{x: []float64{1.0, 2.0, 3.0}, y: []float64{2.0, 4.0, 6.0}}
+						//img := elem.dom.Plot(grid.Image.Id, pConf)
 						img.AddWebSocket()
 						img.WsRead()
 						elems = append(elems, img)

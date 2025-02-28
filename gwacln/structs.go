@@ -94,3 +94,15 @@ type Tab struct {
 type Row struct {
 	GridRow []GridRowElement `yaml:"gridrow"`
 }
+
+type PlotConf struct {
+	x       []float64
+	y       []float64
+	typ     string
+	mode    string
+	title   string
+	x_title string
+	y_title string
+	width   int
+	height  int
+}
