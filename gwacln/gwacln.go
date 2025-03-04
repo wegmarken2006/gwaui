@@ -297,7 +297,7 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 
 	// Create the traces
 	var xs []interface{}
-	var ys []interface{}
+	var ys [][]interface{}
 	var mode string
 	var typeS string
 
@@ -306,7 +306,11 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 			xs = append(xs, elem)
 		}
 		for _, elem := range pConf.Y {
-			ys = append(ys, elem)
+			var ys2 []interface{}
+			for _, yelem := range elem {
+				ys2 = append(ys2, yelem)
+			}
+			ys = append(ys, ys2)
 		}
 
 		if typ == "scatter" {
@@ -321,20 +325,29 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 			xs = append(xs, elem)
 		}
 		for _, elem := range pConf.Y {
-			ys = append(ys, elem)
+			var ys2 []interface{}
+			for _, yelem := range elem {
+				ys2 = append(ys2, yelem)
+			}
+			ys = append(ys, ys2)
 		}
 		mode = "s"
 		typeS = "bar"
 	}
 
-	data1 := js.ValueOf(map[string]interface{}{
-		"x": xs,
-		"y": ys,
-		//"x":    []interface{}{1., 2., 3., 4.},
-		//"y":    []interface{}{12., 9., 15., 12.},
-		"mode": mode,
-		"type": typeS,
-	})
+	var dataV []interface{}
+	for ind, yelem := range ys {
+		data1 := js.ValueOf(map[string]interface{}{
+			"x": xs,
+			"y": js.ValueOf(yelem),
+			//"x":    []interface{}{1., 2., 3., 4.},
+			//"y":    []interface{}{12., 9., 15., 12.},
+			"name": pConf.Names[ind],
+			"mode": mode,
+			"type": typeS,
+		})
+		dataV = append(dataV, data1)
+	}
 
 	layout1 := js.ValueOf(map[string]interface{}{
 		"title":  pConf.Title, //"title",
@@ -342,7 +355,13 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 		"height": pConf.Height,
 	})
 
-	data := js.ValueOf([]interface{}{data1})
+	var dataI []interface{}
+
+	for _, elem := range dataV {
+		dataI = append(dataI, elem)
+	}
+
+	data := js.ValueOf(dataI)
 	//layout := js.ValueOf([]interface{}{layout1})
 
 	// Call the Plotly.newPlot function

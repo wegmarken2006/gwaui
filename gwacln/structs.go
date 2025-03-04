@@ -102,7 +102,8 @@ type Row struct {
 
 type PlotConf struct {
 	X       []float64
-	Y       []float64
+	Y       [][]float64
+	Names   []string
 	X_cat   []string
 	Y_cat   []string
 	Typ     string

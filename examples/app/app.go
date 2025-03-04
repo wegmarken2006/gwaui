@@ -105,8 +105,10 @@ func main() {
 		img1.ShowImage("image.png")
 	})
 
+	var y2 [][]float64
 	x2 := []float64{1.0, 2.0, 3.0, 4.0, 5.0}
-	y2 := []float64{1.0, 2.0, 4.0, 8.0, 16.0}
+	y2 = append(y2, []float64{1.0, 2.0, 4.0, 8.0, 16.0})
+	y2 = append(y2, []float64{2.0, 4.0, 8.0, 16.0, 32.0})
 	xs2 := []string{"aa", "bb", "cc", "dd", "ee"}
 	ys2 := xs2
 	pConf := gw.PlotConf{X: x2, Y: y2}
@@ -116,6 +118,7 @@ func main() {
 	pConf.Typ = "scatter"
 	pConf.Width = 400
 	pConf.Height = 400
+	pConf.Names = []string{"one", "two"}
 	plt1.DrawPlot(&pConf)
 	pConf.Typ = "lines"
 	plt2.DrawPlot(&pConf)
