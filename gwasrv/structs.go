@@ -14,6 +14,11 @@ type GridRowElement struct {
 	Canvas    Canvas     `yaml:"canvas,omitempty"`
 	Image     Image      `yaml:"image,omitempty"`
 	Date      Date       `yaml:"date,omitempty"`
+	Plot      Plot       `yaml:"plot,omitempty"`
+}
+
+type Plot struct {
+	Id string `yaml:"id"`
 }
 
 type Date struct {
@@ -93,4 +98,28 @@ type Tab struct {
 
 type Row struct {
 	GridRow []GridRowElement `yaml:"gridrow"`
+}
+
+type PlotConf struct {
+	X       []float64
+	Y       []float64
+	X_cat   []string
+	Y_cat   []string
+	Typ     string
+	Mode    string
+	Title   string
+	X_title string
+	Y_title string
+	Width   int
+	Height  int
+}
+
+type RxTxMessage struct {
+	Text            string
+	Textarea        string
+	BackgroundColor string
+	Color           string
+	ImageName       string
+	ItemList        []string
+	PlotConf        *PlotConf
 }

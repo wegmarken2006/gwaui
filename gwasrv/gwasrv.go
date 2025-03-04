@@ -28,15 +28,6 @@ type WsElem struct {
 	addr string
 }
 
-type TxMessage struct {
-	Text            string
-	Textarea        string
-	BackgroundColor string
-	Color           string
-	ImageName       string
-	ItemList        []string
-}
-
 func WsElemNew(id string) WsElem {
 
 	addr := Sprintf("/%s", id)
@@ -121,7 +112,7 @@ func (wse *WsElem) wsWrite(message []byte) error {
 	return err
 }
 
-func (wse *WsElem) writeMessage(txMsg TxMessage) error {
+func (wse *WsElem) writeMessage(txMsg RxTxMessage) error {
 	byteTx, err := yaml.Marshal(txMsg)
 	if err != nil {
 		return err
@@ -135,43 +126,50 @@ func (wse *WsElem) writeMessage(txMsg TxMessage) error {
 }
 
 func (wse *WsElem) ShowImage(pngFile string) error {
-	txMsg := TxMessage{}
+	txMsg := RxTxMessage{}
 	txMsg.ImageName = pngFile
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) SetBackgroundColor(color string) error {
-	txMsg := TxMessage{}
+	txMsg := RxTxMessage{}
 	txMsg.BackgroundColor = color
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) SetColor(color string) error {
-	txMsg := TxMessage{}
+	txMsg := RxTxMessage{}
 	txMsg.Color = color
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) SetInnerText(text string) error {
-	txMsg := TxMessage{}
+	txMsg := RxTxMessage{}
 	txMsg.Text = text
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) SetItemsList(lst []string) error {
-	txMsg := TxMessage{}
+	txMsg := RxTxMessage{}
 	txMsg.ItemList = lst
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) WriteTextArea(text string) error {
-	txMsg := TxMessage{}
+	txMsg := RxTxMessage{}
 	txMsg.Textarea = text
+	err := wse.writeMessage(txMsg)
+	return err
+}
+
+func (wse *WsElem) DrawPlot(pConf *PlotConf) error {
+	txMsg := RxTxMessage{}
+	txMsg.PlotConf = pConf
 	err := wse.writeMessage(txMsg)
 	return err
 }
@@ -261,6 +259,12 @@ func Init(yamlName string) (func(string) *WsElem, string, error) {
 					im.AttachWebSocket(func(message string) {})
 					helems[grid.Image.Id] = &im
 				}
+				if len(grid.Plot.Id) > 0 {
+					plt := WsElemNew(grid.Plot.Id)
+					plt.AttachWebSocket(func(message string) {})
+					helems[grid.Plot.Id] = &plt
+				}
+
 			}
 		}
 	}

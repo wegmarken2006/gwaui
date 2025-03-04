@@ -73,6 +73,9 @@ func main() {
 	//cv1 := getElem("id_44")
 	img1 := getElem("id_46")
 	bt2 := getElem("id_41")
+	plt1 := getElem("id_47")
+	plt2 := getElem("id_48")
+	plt3 := getElem("id_49")
 
 	dt1.AttachWebSocket(show)
 
@@ -101,6 +104,23 @@ func main() {
 		testImage("static/image.png", 400, 400)
 		img1.ShowImage("image.png")
 	})
+
+	x2 := []float64{1.0, 2.0, 3.0, 4.0, 5.0}
+	y2 := []float64{1.0, 2.0, 4.0, 8.0, 16.0}
+	xs2 := []string{"aa", "bb", "cc", "dd", "ee"}
+	ys2 := xs2
+	pConf := gw.PlotConf{X: x2, Y: y2}
+	pConf.X_cat = xs2
+	pConf.Y_cat = ys2
+	pConf.Title = "prova"
+	pConf.Typ = "scatter"
+	pConf.Width = 400
+	pConf.Height = 400
+	plt1.DrawPlot(&pConf)
+	pConf.Typ = "lines"
+	plt2.DrawPlot(&pConf)
+	pConf.Typ = "bar"
+	plt3.DrawPlot(&pConf)
 
 	if wv {
 		w := webview.New(false)

@@ -284,32 +284,75 @@ func (dom *Dom) Tabcontent(tab Elem, id string, title string) Elem {
 	return div2
 }
 
-func (dom *Dom) Plot(id string, pConf PlotConf) Elem {
+func (dom *Dom) Plot(id string) Elem {
 	elem := dom.newElem(id, "div")
-	//plotly := js.Global().Get("Plotly")
+	elem.jsValue.Get("style").Call("setProperty", "text-align", "center")
+
+	return elem
+}
+
+func (elem *Elem) DrawPlot(pConf *PlotConf) {
+
+	typ := pConf.Typ
 
 	// Create the traces
+	var xs []interface{}
+	var ys []interface{}
+	var mode string
+	var typeS string
+
+	if typ == "lines" || typ == "scatter" {
+		for _, elem := range pConf.X {
+			xs = append(xs, elem)
+		}
+		for _, elem := range pConf.Y {
+			ys = append(ys, elem)
+		}
+
+		if typ == "scatter" {
+			mode = "markers"
+		} else {
+			mode = "lines"
+		}
+		typeS = "scatter"
+	} else if typ == "bar" {
+		//vertical bar
+		for _, elem := range pConf.X_cat {
+			xs = append(xs, elem)
+		}
+		for _, elem := range pConf.Y {
+			ys = append(ys, elem)
+		}
+		mode = "s"
+		typeS = "bar"
+	}
+
 	data1 := js.ValueOf(map[string]interface{}{
-		//"x":    []interface{}{pConf.x},
-		//"y":    []interface{}{pConf.y},
-		"x":    []interface{}{1, 2, 3, 4},
-		"y":    []interface{}{12, 9, 15, 12},
-		"mode": "markers",
-		"type": "scatter",
+		"x": xs,
+		"y": ys,
+		//"x":    []interface{}{1., 2., 3., 4.},
+		//"y":    []interface{}{12., 9., 15., 12.},
+		"mode": mode,
+		"type": typeS,
 	})
-	/*
-		layout1 := js.ValueOf(map[string]interface{}{
-			"title":  "title",
-			"width":  100,
-			"height": 100,
-		})
-	*/
+
+	layout1 := js.ValueOf(map[string]interface{}{
+		"title":  pConf.Title, //"title",
+		"width":  pConf.Width,
+		"height": pConf.Height,
+	})
+
 	data := js.ValueOf([]interface{}{data1})
 	//layout := js.ValueOf([]interface{}{layout1})
 
 	// Call the Plotly.newPlot function
-	dom.wind.Get("Plotly").Call("newPlot", dom.doc.Call("getElementById", id), data)
-	return elem
+
+	js.Global().Get("Plotly").Call(
+		"newPlot",
+		elem.jsValue,
+		data,
+		layout1,
+	)
 }
 
 func (elem *Elem) enableThisTab() {
@@ -549,19 +592,10 @@ func (elem *Elem) AddWebSocket() {
 	elem.ws = ws
 }
 
-type RxMessage struct {
-	Text            string
-	Textarea        string
-	BackgroundColor string
-	Color           string
-	ImageName       string
-	ItemList        []string
-}
-
 func (elem *Elem) WsRead() {
 
 	jsFun := func(this js.Value, inputs []js.Value) interface{} {
-		var rxMsg RxMessage
+		var rxMsg RxTxMessage
 
 		event := inputs[0]
 
@@ -595,6 +629,9 @@ func (elem *Elem) WsRead() {
 		}
 		if len(rxMsg.ImageName) > 0 {
 			elem.ShowImage(rxMsg.ImageName)
+		}
+		if rxMsg.PlotConf != nil {
+			elem.DrawPlot(rxMsg.PlotConf)
 		}
 
 		return nil
@@ -760,11 +797,15 @@ func (elem *Elem) WsReadConfiguration() {
 					}
 					if len(grid.Image.Id) > 0 {
 						img := elem.dom.Image(grid.Image.Id, "")
-						//pConf := PlotConf{x: []float64{1.0, 2.0, 3.0}, y: []float64{2.0, 4.0, 6.0}}
-						//img := elem.dom.Plot(grid.Image.Id, pConf)
 						img.AddWebSocket()
 						img.WsRead()
 						elems = append(elems, img)
+					}
+					if len(grid.Plot.Id) > 0 {
+						plt := elem.dom.Plot(grid.Plot.Id)
+						plt.AddWebSocket()
+						plt.WsRead()
+						elems = append(elems, plt)
 					}
 
 				}

@@ -76,3 +76,12 @@
 - tab:
     id: id201
     text: tab 4
+    rows:
+        - gridrow:
+          - plot:
+                id: id_47
+          - plot:
+                id: id_48
+          - plot:
+                id: id_49
+
