@@ -302,12 +302,12 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 	var typeS string
 
 	if typ == "lines" || typ == "scatter" {
-		for _, elem := range pConf.X {
-			xs = append(xs, elem)
+		for _, item := range pConf.X {
+			xs = append(xs, item)
 		}
-		for _, elem := range pConf.Y {
+		for _, item := range pConf.Y {
 			var ys2 []interface{}
-			for _, yelem := range elem {
+			for _, yelem := range item {
 				ys2 = append(ys2, yelem)
 			}
 			ys = append(ys, ys2)
@@ -319,34 +319,65 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 			mode = "lines"
 		}
 		typeS = "scatter"
-	} else if typ == "bar" || typ == "box" {
-		//vertical bar
-		for _, elem := range pConf.X_cat {
-			xs = append(xs, elem)
+	} else if typ == "bar" {
+		for _, item := range pConf.X_cat {
+			xs = append(xs, item)
 		}
-		for _, elem := range pConf.Y {
+		for _, item := range pConf.Y {
 			var ys2 []interface{}
-			for _, yelem := range elem {
+			for _, yelem := range item {
 				ys2 = append(ys2, yelem)
 			}
 			ys = append(ys, ys2)
 		}
-		mode = "s"
 		typeS = typ
+		mode = "s"
+	} else if typ == "box" {
+		for _, item := range pConf.Y {
+			var ys2 []interface{}
+			for _, yelem := range item {
+				ys2 = append(ys2, yelem)
+			}
+			ys = append(ys, ys2)
+		}
+		typeS = typ
+		mode = ""
+	}
+
+	//if no names are passed
+	if len(pConf.Names) != len(ys) {
+		pConf.Names = nil
+		for ind, _ := range ys {
+			pConf.Names = append(pConf.Names, fmt.Sprintf("t%d", ind))
+		}
 	}
 
 	var dataV []interface{}
-	for ind, yelem := range ys {
-		data1 := js.ValueOf(map[string]interface{}{
-			"x": xs,
-			"y": js.ValueOf(yelem),
-			//"x":    []interface{}{1., 2., 3., 4.},
-			//"y":    []interface{}{12., 9., 15., 12.},
-			"name": pConf.Names[ind],
-			"mode": mode,
-			"type": typeS,
-		})
-		dataV = append(dataV, data1)
+	if typ == "box" {
+		for ind, yelem := range ys {
+			data1 := js.ValueOf(map[string]interface{}{
+				"y":    yelem,
+				"name": pConf.Names[ind],
+				"mode": mode,
+				"type": typeS,
+			})
+			dataV = append(dataV, data1)
+		}
+
+	} else {
+		for ind, yelem := range ys {
+			data1 := js.ValueOf(map[string]interface{}{
+				"x": xs,
+				"y": yelem,
+				//"x":    []interface{}{1., 2., 3., 4.},
+				//"y":    []interface{}{12., 9., 15., 12.},
+				"name": pConf.Names[ind],
+				"mode": mode,
+				"type": typeS,
+			})
+			dataV = append(dataV, data1)
+		}
+
 	}
 
 	layout1 := js.ValueOf(map[string]interface{}{
@@ -357,8 +388,8 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 
 	var dataI []interface{}
 
-	for _, elem := range dataV {
-		dataI = append(dataI, elem)
+	for _, item := range dataV {
+		dataI = append(dataI, item)
 	}
 
 	data := js.ValueOf(dataI)

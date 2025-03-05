@@ -76,6 +76,7 @@ func main() {
 	plt1 := getElem("id_47")
 	plt2 := getElem("id_48")
 	plt3 := getElem("id_49")
+	plt4 := getElem("id_50")
 
 	dt1.AttachWebSocket(show)
 
@@ -124,6 +125,8 @@ func main() {
 	plt2.DrawPlot(&pConf)
 	pConf.Typ = "bar"
 	plt3.DrawPlot(&pConf)
+	pConf.Typ = "box"
+	plt4.DrawPlot(&pConf)
 
 	if wv {
 		w := webview.New(false)
