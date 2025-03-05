@@ -319,7 +319,7 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 			mode = "lines"
 		}
 		typeS = "scatter"
-	} else if typ == "bar" {
+	} else if typ == "bar" || typ == "box" {
 		//vertical bar
 		for _, elem := range pConf.X_cat {
 			xs = append(xs, elem)
@@ -332,7 +332,7 @@ func (elem *Elem) DrawPlot(pConf *PlotConf) {
 			ys = append(ys, ys2)
 		}
 		mode = "s"
-		typeS = "bar"
+		typeS = typ
 	}
 
 	var dataV []interface{}

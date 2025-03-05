@@ -177,6 +177,11 @@ func (wse *WsElem) DrawPlot(pConf *PlotConf) error {
 func Init(yamlName string) (func(string) *WsElem, string, error) {
 	// Read and send Yaml configuration to the client
 
+	if _, err := os.Stat("./static"); os.IsNotExist(err) {
+		Println("Folder ./static missing.")
+		os.Exit(0)
+	}
+
 	yamlFile, err := os.Open(yamlName)
 
 	if err != nil {
@@ -272,7 +277,12 @@ func Init(yamlName string) (func(string) *WsElem, string, error) {
 	addr := StartServer()
 
 	retFun := func(id string) *WsElem {
-		return helems[id]
+		elem := helems[id]
+		if elem == nil {
+			Println(id, "not in yaml file")
+			os.Exit(0)
+		}
+		return elem
 	}
 	return retFun, addr, nil
 }
