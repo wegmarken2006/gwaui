@@ -26,6 +26,7 @@ var upgrader = websocket.Upgrader{
 type WsElem struct {
 	gs   *websocket.Conn
 	addr string
+	m *sync.Mutex
 }
 
 func WsElemNew(id string) WsElem {
@@ -78,7 +79,11 @@ func (wse *WsElem) InitWriteWs() {
 
 func (wse *WsElem) wsWrite(message []byte) error {
 	var err error = nil
-	var m sync.Mutex
+	if wse.m == nil {
+		var m sync.Mutex
+		wse.m = &m
+	}
+	
 	go func() {
 		//wait for available websocket
 		for ind := 0; ind < 200; ind++ {
@@ -91,9 +96,9 @@ func (wse *WsElem) wsWrite(message []byte) error {
 			Println(wse.addr, "no websocket")
 			//err = fmt.Errorf("no websocket")
 		} else {
-			m.Lock()
+			wse.m.Lock()
 			err = wse.gs.WriteMessage(websocket.TextMessage, message)
-			m.Unlock()
+			wse.m.Unlock()
 			if err != nil {
 				Println(err)
 			}
