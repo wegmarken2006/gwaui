@@ -1,0 +1,27 @@
+- tab:
+    rows:
+      - gridrow:
+          - p:
+              id:
+          - p:
+              id:
+          - h2:
+              id: id_7
+              text: header2
+              mutable: true
+          - p:
+              id:
+          - p:
+              id:
+      - gridrow:
+          - dropdown:
+              id: id_1
+              defaultind: 1
+              items:
+                - uno
+                - due
+                - tre
+          - button:
+              id: id_2
+              text: press
+

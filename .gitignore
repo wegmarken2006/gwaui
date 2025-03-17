@@ -1,0 +1,5 @@
+examples/app/static/image.png
+examples/app/app
+examples/app/app.exe
+gwacln/main.wasm
+examples/app/static/main.wasm
