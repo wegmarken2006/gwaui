@@ -186,6 +186,7 @@ func (wse *WsElem) DrawPlotLines(x []float64, ys [][]float64, names []string, la
 	pConf.Typ = "lines"
 	pConf.X = x
 	pConf.Y = ys
+	pConf.Names = names
 	pConf.Title = layout.Title
 	pConf.Width = layout.Width
 	pConf.Height = layout.Height
@@ -200,6 +201,7 @@ func (wse *WsElem) DrawPlotScatter(x []float64, ys [][]float64, names []string, 
 	pConf.Typ = "scatter"
 	pConf.X = x
 	pConf.Y = ys
+	pConf.Names = names
 	pConf.Title = layout.Title
 	pConf.Width = layout.Width
 	pConf.Height = layout.Height
@@ -214,6 +216,7 @@ func (wse *WsElem) DrawPlotBars(x []string, ys [][]float64, names []string, layo
 	pConf.Typ = "bar"
 	pConf.X_cat = x
 	pConf.Y = ys
+	pConf.Names = names
 	pConf.Title = layout.Title
 	pConf.Width = layout.Width
 	pConf.Height = layout.Height
@@ -227,6 +230,7 @@ func (wse *WsElem) DrawPlotBox(ys [][]float64, names []string, layout *PlotLayou
 	pConf := plotConf{}
 	pConf.Typ = "box"
 	pConf.Y = ys
+	pConf.Names = names
 	pConf.Title = layout.Title
 	pConf.Width = layout.Width
 	pConf.Height = layout.Height
