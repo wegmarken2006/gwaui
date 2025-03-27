@@ -100,7 +100,7 @@ type Row struct {
 	GridRow []GridRowElement `yaml:"gridrow"`
 }
 
-type PlotConf struct {
+type plotConf struct {
 	X       []float64
 	Y       [][]float64
 	Names   []string
@@ -115,12 +115,18 @@ type PlotConf struct {
 	Height  int
 }
 
-type RxTxMessage struct {
+type PlotLayout struct {
+	Title  string
+	Width  int
+	Height int
+}
+
+type rxTxMessage struct {
 	Text            string
 	Textarea        string
 	BackgroundColor string
 	Color           string
 	ImageName       string
 	ItemList        []string
-	PlotConf        *PlotConf
+	PlotConf        *plotConf
 }

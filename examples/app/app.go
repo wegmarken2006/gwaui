@@ -111,22 +111,14 @@ func main() {
 	y2 = append(y2, []float64{1.0, 2.0, 4.0, 8.0, 16.0})
 	y2 = append(y2, []float64{2.0, 4.0, 8.0, 16.0, 32.0})
 	xs2 := []string{"aa", "bb", "cc", "dd", "ee"}
-	ys2 := xs2
-	pConf := gw.PlotConf{X: x2, Y: y2}
-	pConf.X_cat = xs2
-	pConf.Y_cat = ys2
-	pConf.Title = "prova"
-	pConf.Typ = "scatter"
-	pConf.Width = 400
-	pConf.Height = 400
-	pConf.Names = []string{"one", "two"}
-	plt1.DrawPlot(&pConf)
-	pConf.Typ = "lines"
-	plt2.DrawPlot(&pConf)
-	pConf.Typ = "bar"
-	plt3.DrawPlot(&pConf)
-	pConf.Typ = "box"
-	plt4.DrawPlot(&pConf)
+
+	names := []string{"one", "two"}
+	layout := gw.PlotLayout{Title: "Test", Width: 400, Height: 400}
+
+	plt1.DrawPlotScatter(x2, y2, names, &layout)
+	plt2.DrawPlotLines(x2, y2, names, &layout)
+	plt3.DrawPlotBars(xs2, y2, names, &layout)
+	plt4.DrawPlotBox(y2, names, &layout)
 
 	if wv {
 		w := webview.New(false)

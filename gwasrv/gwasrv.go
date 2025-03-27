@@ -26,7 +26,7 @@ var upgrader = websocket.Upgrader{
 type WsElem struct {
 	gs   *websocket.Conn
 	addr string
-	m *sync.Mutex
+	m    *sync.Mutex
 }
 
 func WsElemNew(id string) WsElem {
@@ -83,7 +83,7 @@ func (wse *WsElem) wsWrite(message []byte) error {
 		var m sync.Mutex
 		wse.m = &m
 	}
-	
+
 	go func() {
 		//wait for available websocket
 		for ind := 0; ind < 200; ind++ {
@@ -117,7 +117,7 @@ func (wse *WsElem) wsWrite(message []byte) error {
 	return err
 }
 
-func (wse *WsElem) writeMessage(txMsg RxTxMessage) error {
+func (wse *WsElem) writeMessage(txMsg rxTxMessage) error {
 	byteTx, err := yaml.Marshal(txMsg)
 	if err != nil {
 		return err
@@ -131,50 +131,107 @@ func (wse *WsElem) writeMessage(txMsg RxTxMessage) error {
 }
 
 func (wse *WsElem) ShowImage(pngFile string) error {
-	txMsg := RxTxMessage{}
+	txMsg := rxTxMessage{}
 	txMsg.ImageName = pngFile
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) SetBackgroundColor(color string) error {
-	txMsg := RxTxMessage{}
+	txMsg := rxTxMessage{}
 	txMsg.BackgroundColor = color
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) SetColor(color string) error {
-	txMsg := RxTxMessage{}
+	txMsg := rxTxMessage{}
 	txMsg.Color = color
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) SetInnerText(text string) error {
-	txMsg := RxTxMessage{}
+	txMsg := rxTxMessage{}
 	txMsg.Text = text
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) SetItemsList(lst []string) error {
-	txMsg := RxTxMessage{}
+	txMsg := rxTxMessage{}
 	txMsg.ItemList = lst
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
 func (wse *WsElem) WriteTextArea(text string) error {
-	txMsg := RxTxMessage{}
+	txMsg := rxTxMessage{}
 	txMsg.Textarea = text
 	err := wse.writeMessage(txMsg)
 	return err
 }
 
-func (wse *WsElem) DrawPlot(pConf *PlotConf) error {
-	txMsg := RxTxMessage{}
+/*
+func (wse *WsElem) DrawPlot(pConf *plotConf) error {
+	txMsg := rxTxMessage{}
 	txMsg.PlotConf = pConf
+	err := wse.writeMessage(txMsg)
+	return err
+}
+*/
+
+func (wse *WsElem) DrawPlotLines(x []float64, ys [][]float64, names []string, layout *PlotLayout) error {
+	pConf := plotConf{}
+	pConf.Typ = "lines"
+	pConf.X = x
+	pConf.Y = ys
+	pConf.Title = layout.Title
+	pConf.Width = layout.Width
+	pConf.Height = layout.Height
+	txMsg := rxTxMessage{}
+	txMsg.PlotConf = &pConf
+	err := wse.writeMessage(txMsg)
+	return err
+}
+
+func (wse *WsElem) DrawPlotScatter(x []float64, ys [][]float64, names []string, layout *PlotLayout) error {
+	pConf := plotConf{}
+	pConf.Typ = "scatter"
+	pConf.X = x
+	pConf.Y = ys
+	pConf.Title = layout.Title
+	pConf.Width = layout.Width
+	pConf.Height = layout.Height
+	txMsg := rxTxMessage{}
+	txMsg.PlotConf = &pConf
+	err := wse.writeMessage(txMsg)
+	return err
+}
+
+func (wse *WsElem) DrawPlotBars(x []string, ys [][]float64, names []string, layout *PlotLayout) error {
+	pConf := plotConf{}
+	pConf.Typ = "bar"
+	pConf.X_cat = x
+	pConf.Y = ys
+	pConf.Title = layout.Title
+	pConf.Width = layout.Width
+	pConf.Height = layout.Height
+	txMsg := rxTxMessage{}
+	txMsg.PlotConf = &pConf
+	err := wse.writeMessage(txMsg)
+	return err
+}
+
+func (wse *WsElem) DrawPlotBox(ys [][]float64, names []string, layout *PlotLayout) error {
+	pConf := plotConf{}
+	pConf.Typ = "box"
+	pConf.Y = ys
+	pConf.Title = layout.Title
+	pConf.Width = layout.Width
+	pConf.Height = layout.Height
+	txMsg := rxTxMessage{}
+	txMsg.PlotConf = &pConf
 	err := wse.writeMessage(txMsg)
 	return err
 }

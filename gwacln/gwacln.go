@@ -291,7 +291,7 @@ func (dom *Dom) Plot(id string) Elem {
 	return elem
 }
 
-func (elem *Elem) DrawPlot(pConf *PlotConf) {
+func (elem *Elem) DrawPlot(pConf *plotConf) {
 
 	typ := pConf.Typ
 
@@ -645,7 +645,7 @@ func (elem *Elem) AddWebSocket() {
 func (elem *Elem) WsRead() {
 
 	jsFun := func(this js.Value, inputs []js.Value) interface{} {
-		var rxMsg RxTxMessage
+		var rxMsg rxTxMessage
 
 		event := inputs[0]
 
