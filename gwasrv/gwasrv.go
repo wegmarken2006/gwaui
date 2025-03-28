@@ -86,23 +86,26 @@ func (wse *WsElem) wsWrite(message []byte) error {
 
 	go func() {
 		//wait for available websocket
-		for ind := 0; ind < 200; ind++ {
-			if wse.gs != nil {
-				break
+		for {
+			for ind := 0; ind < 250; ind++ {
+				if wse.gs != nil {
+					break
+				}
+				time.Sleep(200 * time.Millisecond)
 			}
-			time.Sleep(50 * time.Millisecond)
-		}
-		if wse.gs == nil {
-			Println(wse.addr, "no websocket")
-			//err = fmt.Errorf("no websocket")
-		} else {
-			wse.m.Lock()
-			err = wse.gs.WriteMessage(websocket.TextMessage, message)
-			wse.m.Unlock()
-			if err != nil {
-				Println(err)
+			if wse.gs == nil {
+				Println(wse.addr, "still no websocket")
+			} else {
+				wse.m.Lock()
+				err = wse.gs.WriteMessage(websocket.TextMessage, message)
+				wse.m.Unlock()
+				if err != nil {
+					Println(err)
+				}
+				//Println(wse.addr, "ok websocket")
+				return
+				//Println(wse.addr, "ok websocket")
 			}
-			//Println(wse.addr, "ok websocket")
 		}
 	}()
 	/*

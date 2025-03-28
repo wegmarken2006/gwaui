@@ -227,7 +227,7 @@ func (dom *Dom) Empty() Elem {
 }
 
 func (dom *Dom) GridRow(children []Elem) Elem {
-	elem := dom.newElem("", "p")
+	elem := dom.newElem("", "div")
 	elem.jsValue.Call("setAttribute", "class", "grid")
 	for _, child := range children {
 		elem.Append(child)
