@@ -41,7 +41,7 @@ type CanvasElem struct {
 func main() {
 	c := make(chan struct{}, 0)
 
-	GwauiInit("title", true, true)
+	GwauiInit("app", true, true)
 
 	<-c
 }
@@ -267,7 +267,7 @@ func (dom *Dom) Image(id string, fileName string) Elem {
 
 func (dom *Dom) Tabcontent(tab Elem, id string, title string) Elem {
 	bt := dom.newElem("", "button")
-	bt.jsValue.Call("setAttribute", "class", "tablinks secondary")
+	bt.jsValue.Call("setAttribute", "class", "tablinks outline secondary")
 	bt.SetInnerText(title)
 	div2 := dom.newElem(id, "div")
 	div2.jsValue.Call("setAttribute", "class", "tabcontent")
@@ -409,20 +409,20 @@ func (elem *Elem) enableThisTab() {
 	for _, tab := range elem.dom.tabs {
 		if tab.id == elem.id {
 			tab.jsValue.Get("style").Call("setProperty", "display", "block")
-			tab.child1.Call("setAttribute", "class", "tablinks active")
+			tab.child1.Call("setAttribute", "class", "tablinks outline active")
 		} else {
 			tab.jsValue.Get("style").Call("setProperty", "display", "none")
-			tab.child1.Call("setAttribute", "class", "tablinks secondary")
+			tab.child1.Call("setAttribute", "class", "tablinks outline secondary")
 		}
 	}
 }
 func (elem *Elem) enableThisTabIfFirst() {
 	if len(elem.dom.tabs) == 0 {
 		elem.jsValue.Get("style").Call("setProperty", "display", "block")
-		elem.child1.Call("setAttribute", "class", "tablinks active")
+		elem.child1.Call("setAttribute", "class", "tablinks outline active")
 	} else {
 		elem.jsValue.Get("style").Call("setProperty", "display", "none")
-		elem.child1.Call("setAttribute", "class", "tablinks secondary")
+		elem.child1.Call("setAttribute", "class", "tablinks outline secondary")
 	}
 }
 

@@ -9,7 +9,6 @@ import (
 	"image/png"
 	"os"
 
-	webview "github.com/webview/webview_go"
 	gw "github.com/wegmarken2006/gwaui/gwasrv"
 )
 
@@ -52,6 +51,7 @@ func main() {
 	wv := false
 	if len(args) > 1 {
 		if args[1] == "wv" {
+			//use webview
 			wv = true
 		}
 	}
@@ -120,19 +120,6 @@ func main() {
 	plt3.DrawPlotBars(xs2, y2, names, &layout)
 	plt4.DrawPlotBox(y2, names, &layout)
 
-	if wv {
-		w := webview.New(false)
-		defer w.Destroy()
-		w.SetTitle("Bind Example")
-		w.SetSize(1200, 1000, 0)
-		w.Navigate(addr)
+	gw.Run(addr, "Test1", 1000, 800, wv)
 
-		w.Run()
-
-	} else {
-		text := Sprintf("Serving on %s", addr)
-		Println(text)
-
-		gw.WaitKeyFromCOnsole()
-	}
 }

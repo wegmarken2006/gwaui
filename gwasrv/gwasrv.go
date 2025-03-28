@@ -13,6 +13,8 @@ import (
 
 	"github.com/gorilla/websocket"
 	"gopkg.in/yaml.v3"
+
+	webview "github.com/webview/webview_go"
 )
 
 const WEBSOCKET_BUFFER_SIZE = 4096
@@ -354,6 +356,23 @@ func Init(yamlName string) (func(string) *WsElem, string, error) {
 		return elem
 	}
 	return retFun, addr, nil
+}
+
+func Run(addr string, titleStr string, width int, height int, wview bool) {
+	if wview {
+		w := webview.New(false)
+		defer w.Destroy()
+		w.SetTitle(titleStr)
+		w.SetSize(width, height, 0)
+		w.Navigate(addr)
+
+		w.Run()
+	} else {
+		text := Sprintf("Serving on %s", addr)
+		Println(text)
+
+		WaitKeyFromCOnsole()
+	}
 }
 
 func StartServer() string {
