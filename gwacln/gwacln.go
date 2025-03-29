@@ -138,6 +138,7 @@ func (dom *Dom) Canvas(id string, width int, height int) Elem {
 	return div
 }
 
+/*
 func (dom *Dom) Button(id string, text string) Elem {
 	elem := dom.newElem(id, "button")
 	elem.SetInnerText(text)
@@ -145,6 +146,7 @@ func (dom *Dom) Button(id string, text string) Elem {
 	elem.jsValue.Call("setAttribute", "class", "primary")
 	return elem
 }
+*/
 
 func (dom *Dom) Label(id string, text string) Elem {
 	elem := dom.newElem(id, "label")
@@ -249,12 +251,14 @@ func (dom *Dom) Header2(id string, text string) Elem {
 	return elem
 }
 
+/*
 func (dom *Dom) Tab() Elem {
 	div1 := dom.newElem("", "div")
 	div1.jsValue.Call("setAttribute", "class", "tab")
 
 	return div1
 }
+*/
 
 func (dom *Dom) Image(id string, fileName string) Elem {
 	div1 := dom.newElem(id, "img")
@@ -265,6 +269,7 @@ func (dom *Dom) Image(id string, fileName string) Elem {
 	return div1
 }
 
+/*
 func (dom *Dom) Tabcontent(tab Elem, id string, title string) Elem {
 	bt := dom.newElem("", "button")
 	bt.jsValue.Call("setAttribute", "class", "tablinks outline secondary")
@@ -283,6 +288,7 @@ func (dom *Dom) Tabcontent(tab Elem, id string, title string) Elem {
 
 	return div2
 }
+*/
 
 func (dom *Dom) Plot(id string) Elem {
 	elem := dom.newElem(id, "div")
@@ -405,6 +411,7 @@ func (elem *Elem) DrawPlot(pConf *plotConf) {
 	)
 }
 
+/*
 func (elem *Elem) enableThisTab() {
 	for _, tab := range elem.dom.tabs {
 		if tab.id == elem.id {
@@ -425,6 +432,7 @@ func (elem *Elem) enableThisTabIfFirst() {
 		elem.child1.Call("setAttribute", "class", "tablinks outline secondary")
 	}
 }
+*/
 
 func (dom *Dom) TextArea(id string, lines int, text string) Elem {
 	elem := dom.newElem(id, "textarea")

@@ -56,7 +56,7 @@
     id: id200
     text: tab3
     rows:
-        - gridrow:
+      - gridrow:
           - p:
               id:
           - button:
@@ -64,26 +64,24 @@
               text: draw
           - p:
               id: id_42
-        - gridrow:
+      - gridrow:
           - p:
               id:
           - image:
-                id: id_46
+              id: id_46
           - p:
               id:
 
-
 - tab:
     id: id201
-    text: tab 4
+    text: tab4
     rows:
-        - gridrow:
+      - gridrow:
           - plot:
-                id: id_47
+              id: id_47
           - plot:
-                id: id_48
+              id: id_48
           - plot:
-                id: id_49
+              id: id_49
           - plot:
-                id: id_50
-
+              id: id_50
