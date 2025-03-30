@@ -3,17 +3,23 @@
 
 package main
 
+import "fmt"
+
+const SIZE = "is-medium"
+
 func (dom *Dom) Button(id string, text string) Elem {
 	elem := dom.newElem(id, "button")
 	elem.SetInnerText(text)
 	elem.jsValue.Call("setAttribute", "type", "button")
-	elem.jsValue.Call("setAttribute", "class", "button is-primary")
+	class := fmt.Sprintf("button %s %s", "is-primary", SIZE)
+	elem.jsValue.Call("setAttribute", "class", class)
 	return elem
 }
 
 func (dom *Dom) Tab() Elem {
 	div1 := dom.newElem("", "div")
-	div1.jsValue.Call("setAttribute", "class", "tabs is-medium")
+	class := fmt.Sprintf("tabs %s", SIZE)
+	div1.jsValue.Call("setAttribute", "class", class)
 	ul1 := dom.newElem("", "ul")
 	div1.Append(ul1)
 	div1.child1 = ul1.jsValue
