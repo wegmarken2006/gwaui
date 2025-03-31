@@ -1,11 +1,13 @@
+/*
 //go:build bulma
 // +build bulma
+*/
 
 package main
 
 import "fmt"
 
-const SIZE = "is-medium"
+const SIZE = "is-size-4" //"is-medium"
 
 func (dom *Dom) Button(id string, text string) Elem {
 	elem := dom.newElem(id, "button")
@@ -66,4 +68,21 @@ func (elem *Elem) enableThisTabIfFirst() {
 		elem.jsValue.Get("style").Call("setProperty", "display", "none")
 		elem.child1.Call("setAttribute", "class", "")
 	}
+}
+
+func (elem *Elem) SetElemSize() {
+	//read current class
+	cCurJs := elem.jsValue.Call("getAttribute", "class")
+	cCur := cCurJs.String()
+	cNew := SIZE
+	if len(cCur) > 0 {
+		cNew = fmt.Sprintf("%s %s", cCur, SIZE)
+	}
+
+	elem.jsValue.Call("setAttribute", "class", cNew)
+}
+
+func (elem *Elem) SetThemeDark() {
+	htmlJs := elem.dom.doc.Call("getElementById", "id_1000")
+	htmlJs.Call("setAttribute", "class", "theme-dark")
 }

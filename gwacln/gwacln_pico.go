@@ -57,3 +57,10 @@ func (elem *Elem) enableThisTabIfFirst() {
 		elem.child1.Call("setAttribute", "class", "tablinks outline secondary")
 	}
 }
+
+func (elem *Elem) SetElemSize() {
+	//do nothing
+}
+
+func (elem *Elem) SetThemeDark() {
+}

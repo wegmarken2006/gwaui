@@ -151,6 +151,7 @@ func (dom *Dom) Button(id string, text string) Elem {
 func (dom *Dom) Label(id string, text string) Elem {
 	elem := dom.newElem(id, "label")
 	elem.SetInnerText(text)
+	elem.SetElemSize()
 	return elem
 }
 
@@ -160,12 +161,14 @@ func (dom *Dom) Input(id string, text string) Elem {
 	if len(text) > 0 {
 		elem.jsValue.Call("setAttribute", "placeholder", text)
 	}
+	elem.SetElemSize()
 	return elem
 }
 
 func (dom *Dom) Date(id string) Elem {
 	elem := dom.newElem(id, "input")
 	elem.jsValue.Call("setAttribute", "type", "date")
+	elem.SetElemSize()
 	return elem
 }
 
@@ -175,6 +178,7 @@ func (dom *Dom) Slider(id string, min int, max int, value int) Elem {
 	elem.jsValue.Call("setAttribute", "min", fmt.Sprintf("%d", min))
 	elem.jsValue.Call("setAttribute", "max", fmt.Sprintf("%d", max))
 	elem.jsValue.Call("setAttribute", "value", fmt.Sprintf("%d", value))
+	elem.SetElemSize()
 	return elem
 }
 
@@ -187,21 +191,22 @@ func (dom *Dom) Switchbox(id string, initial bool) Elem {
 	} else {
 		elem.jsValue.Call("setAttribute", "checked", "false")
 	}
+	elem.SetElemSize()
 	return elem
 }
 
 func (dom *Dom) Form(id string, btText string) Elem {
 	elem := dom.newElem(id, "form")
 	i1 := dom.newElem("", "input")
-	b1 := dom.newElem("", "button")
-	b1.jsValue.Call("setAttribute", "type", "submit")
 	i1.jsValue.Call("setAttribute", "type", "text")
-	b1.jsValue.Set("innerText", btText)
-	b1.jsValue.Call("setAttribute", "class", "primary")
+	b1 := dom.Button("", btText)
+	b1.jsValue.Call("setAttribute", "type", "submit")
+
 	grid := dom.GridRow([]Elem{i1, b1})
 	elem.Append(grid)
 	elem.child1 = i1.jsValue
 	elem.children = 1
+	elem.SetElemSize()
 	return elem
 }
 
@@ -247,6 +252,7 @@ func (dom *Dom) Header1(id string, text string) Elem {
 func (dom *Dom) Header2(id string, text string) Elem {
 	elem := dom.newElem(id, "h2")
 	elem.SetInnerText(text)
+	elem.SetElemSize()
 	elem.jsValue.Get("style").Call("setProperty", "text-align", "center")
 	return elem
 }
@@ -441,12 +447,14 @@ func (dom *Dom) TextArea(id string, lines int, text string) Elem {
 	elem.jsValue.Call("setAttribute", "rows", sLines)
 	elem.SetBackgroundColor("black")
 	elem.SetColor("white")
+	elem.SetElemSize()
 
 	return elem
 }
 
 func (dom *Dom) Dropdown(id string, choices []string, defaultInd int) Elem {
 	sel := dom.newElem(id, "select")
+	sel.SetElemSize()
 
 	op1 := dom.newElem("", "option")
 	op1.jsValue.Call("setAttribute", "value", "")
@@ -510,29 +518,16 @@ func (elem *Elem) SetColor(color string) {
 }
 
 func (elem *Elem) SetItemsList(lst []string) {
-	//sel := dom.newElem(id, "select")
-
 	dom := elem.dom
 	defaultInd := 0
 
-	op1 := dom.newElem("", "option")
-	op1.jsValue.Call("setAttribute", "value", "")
-
-	if len(lst) > 0 {
-		elem.jsValue.Call("setAttribute", "aria-label", lst[defaultInd])
-		op1.SetInnerText(lst[defaultInd])
-	}
-
-	elem.Append(op1)
-
 	for ind, item := range lst {
+		op := dom.newElem("", "option")
+		op.SetInnerText(item)
 		if ind == defaultInd {
-			continue
-		} else {
-			op := dom.newElem("", "option")
-			op.SetInnerText(item)
-			elem.Append(op)
+			op.jsValue.Call("setAttribute", "selected", "")
 		}
+		elem.Append(op)
 	}
 
 }
@@ -690,6 +685,14 @@ func (elem *Elem) WsRead() {
 		}
 		if rxMsg.PlotConf != nil {
 			elem.DrawPlot(rxMsg.PlotConf)
+		}
+		if len(rxMsg.FuncToCall) > 0 {
+			if rxMsg.FuncToCall == "SetThemeDark" {
+				elem.SetThemeDark()
+			}
+			// refletion doesn't work
+			//fn := reflect.ValueOf(elem).MethodByName(rxMsg.FuncToCall)
+			//fn.Call(nil)
 		}
 
 		return nil
@@ -865,7 +868,6 @@ func (elem *Elem) WsReadConfiguration() {
 						plt.WsRead()
 						elems = append(elems, plt)
 					}
-
 				}
 				gd := elem.dom.GridRow(elems)
 				if tabValid {

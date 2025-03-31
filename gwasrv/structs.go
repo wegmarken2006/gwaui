@@ -129,4 +129,5 @@ type rxTxMessage struct {
 	ImageName       string
 	ItemList        []string
 	PlotConf        *plotConf
+	FuncToCall      string
 }

@@ -186,6 +186,13 @@ func (wse *WsElem) DrawPlot(pConf *plotConf) error {
 }
 */
 
+func (wse *WsElem) SetThemeDark() error {
+	txMsg := rxTxMessage{}
+	txMsg.FuncToCall = "SetThemeDark"
+	err := wse.writeMessage(txMsg)
+	return err
+}
+
 func (wse *WsElem) DrawPlotLines(x []float64, ys [][]float64, names []string, layout *PlotLayout) error {
 	pConf := plotConf{}
 	pConf.Typ = "lines"

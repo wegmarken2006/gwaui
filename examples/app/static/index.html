@@ -1,7 +1,8 @@
 <!doctype html>
 
-<html>
-    <!--
+
+    <html id="id_1000"></html>
+<!--
 <head>
     <meta charset="utf-8" />
     <script src="wasm_exec.js"></script>
@@ -14,59 +15,54 @@
 </head>
 -->
 
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="color-scheme" content="dark light" />
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
 
-        <!-- 
+    <!-- 
         <link rel="stylesheet" href="pico.purple.css" />
 -->
-        <!-- -->
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
-        />
-        
+    <!-- -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
 
-        <script
-            type="text/javascript"
-            src="/static/plotly/plotly-2.8.3.min.js"
-        ></script>
 
-        <script src="wasm_exec.js"></script>
-        <script>
-            const go = new Go();
-            const WASM_URL = "main.wasm";
+    <script type="text/javascript" src="/static/plotly/plotly-2.8.3.min.js"></script>
 
-            var wasm;
+    <script src="wasm_exec.js"></script>
+    <script>
+        const go = new Go();
+        const WASM_URL = "main.wasm";
 
-            if ("instantiateStreaming" in WebAssembly) {
-                WebAssembly.instantiateStreaming(
-                    fetch(WASM_URL),
-                    go.importObject,
-                ).then(function (obj) {
-                    wasm = obj.instance;
-                    go.run(wasm);
-                });
-            } else {
-                fetch(WASM_URL)
-                    .then((resp) => resp.arrayBuffer())
-                    .then((bytes) =>
-                        WebAssembly.instantiate(bytes, go.importObject).then(
-                            function (obj) {
-                                wasm = obj.instance;
-                                go.run(wasm);
-                            },
-                        ),
-                    );
-            }
-        </script>
-    </head>
+        var wasm;
 
-    <body>
-        <!--
+        if ("instantiateStreaming" in WebAssembly) {
+            WebAssembly.instantiateStreaming(
+                fetch(WASM_URL),
+                go.importObject,
+            ).then(function (obj) {
+                wasm = obj.instance;
+                go.run(wasm);
+            });
+        } else {
+            fetch(WASM_URL)
+                .then((resp) => resp.arrayBuffer())
+                .then((bytes) =>
+                    WebAssembly.instantiate(bytes, go.importObject).then(
+                        function (obj) {
+                            wasm = obj.instance;
+                            go.run(wasm);
+                        },
+                    ),
+                );
+        }
+    </script>
+</head>
+
+<body>
+    <!--
     <button id ="b1" onclick="window.handleClick()">Click me</button>
 -->
-    </body>
+</body>
+
 </html>
