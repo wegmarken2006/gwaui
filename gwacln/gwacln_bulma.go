@@ -1,7 +1,5 @@
-/*
 //go:build bulma
 // +build bulma
-*/
 
 package main
 

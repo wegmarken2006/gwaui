@@ -63,4 +63,6 @@ func (elem *Elem) SetElemSize() {
 }
 
 func (elem *Elem) SetThemeDark() {
+	htmlJs := elem.dom.doc.Call("getElementById", "id_1000")
+	htmlJs.Call("setAttribute", "data-theme", "dark")
 }
